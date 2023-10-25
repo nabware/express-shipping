@@ -1,12 +1,24 @@
 "use strict";
 
 const request = require("supertest");
+
+// This would never work.
+// let { shipProduct } = require("../shipItApi");
+// shipProduct = jest.fn();
+
+// For mocking -- Must import the entire object.
+const shipItApi = require("../shipItApi");
+shipItApi.shipProduct = jest.fn();
+
 const app = require("../app");
 
 const ZIP_CODE_REGEX = "[0-9]{5}(-[0-9]{4})?";
 
 describe("POST /", function () {
-  test("valid", async function () {
+  test("valid function mock", async function () {
+    shipItApi.shipProduct
+      .mockReturnValue(100);
+
     const resp = await request(app).post("/shipments").send({
       productId: 1000,
       name: "Test Tester",
@@ -14,13 +26,15 @@ describe("POST /", function () {
       zip: "12345-6789",
     });
 
-    expect(resp.body).toEqual({ shipped: expect.any(Number) });
+    expect(resp.statusCode).toEqual(200);
+    expect(resp.body).toEqual({ shipped: 100 });
   });
 
   test("throws error if empty request body", async function () {
     const resp = await request(app)
       .post("/shipments")
       .send();
+
     expect(resp.statusCode).toEqual(400);
     expect(resp.body).toEqual({
       "error": {

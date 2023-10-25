@@ -7,7 +7,7 @@ const router = new express.Router();
 const { shipProduct } = require("../shipItApi");
 const jsonschema = require("jsonschema");
 const productSchema = require("../schemas/productSchema.json");
-
+console.log("shipments.js shipProduct = ", shipProduct);
 /** POST /ship
  *
  * VShips an order coming from json body:
